@@ -34,6 +34,7 @@ export const ALL_UNITS = [
   "min",
   "mi",
   "count/min",
+  "ft/s",
   "ms",
   "kcal",
   "%",
