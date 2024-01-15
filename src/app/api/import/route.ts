@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export async function POST() {
+export async function POST(req: Request) {
   // TODO: translate the data into a workable shape
   // TODO: add auth to make sure valid calls only work
   // TODO: insert data into db
