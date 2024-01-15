@@ -44,6 +44,7 @@ export const ALL_UNITS = [
 
 export const metricsTable = mysqlTable("metrics", {
   id: serial("id").primaryKey().notNull(),
+  name: varchar("name", { length: 255 }),
   data: json("data"),
   units: mysqlEnum("units", ALL_UNITS),
   metricType: mysqlEnum("metricType", ALL_METRIC_NAMES),
