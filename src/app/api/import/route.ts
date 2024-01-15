@@ -34,12 +34,13 @@ export async function POST(req: Request) {
   const healthPayload: HealthDataResponse = await req.json();
   const healthMetrics = healthPayload.data.metrics;
 
-  db.insert(metrics).values({
+  const query = await db.insert(metrics).values({
     name: "Test",
     data: healthMetrics,
   });
 
   return NextResponse.json({
     status: "ok",
+    id: query.insertId,
   });
 }
