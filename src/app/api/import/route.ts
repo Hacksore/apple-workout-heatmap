@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { metrics } from "@/lib/db/schema";
+import { metricsTable, ALL_UNITS, ALL_METRIC_NAMES } from "@/lib/db/schema";
 import { NextResponse } from "next/server";
 
 interface Metric {
@@ -8,16 +8,8 @@ interface Metric {
     date: string;
     qty: number;
   };
-  name: string;
-  units:
-  | "min"
-  | "count"
-  | "in"
-  | "count/min"
-  | "ms"
-  | "%"
-  | "kcal"
-  | "kcal/hr·kg";
+  name: typeof ALL_METRIC_NAMES;
+  units: typeof ALL_UNITS;
 }
 
 interface HealthDataResponse {
@@ -34,13 +26,17 @@ export async function POST(req: Request) {
   const healthPayload: HealthDataResponse = await req.json();
   const healthMetrics = healthPayload.data.metrics;
 
-  const query = await db.insert(metrics).values({
-    name: "Test",
-    data: healthMetrics,
-  });
+  for (const metric of healthMetrics) {
+
+    await db.insert(metricsTable).values({
+      // @ts-ignore
+      metricType: metric.name,
+      units: metric.units,
+      data: metric.data,
+    });
+  }
 
   return NextResponse.json({
     status: "ok",
-    id: query.insertId,
   });
 }
