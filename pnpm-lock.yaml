@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@planetscale/database':
+    specifier: ^1.13.0
+    version: 1.13.0
   '@uiw/react-heat-map':
     specifier: ^2.2.1
     version: 2.2.1(@babel/runtime@7.23.8)(react-dom@18.2.0)(react@18.2.0)
@@ -13,7 +16,7 @@ dependencies:
     version: 0.19.13
   drizzle-orm:
     specifier: ^0.28.6
-    version: 0.28.6
+    version: 0.28.6(@planetscale/database@1.13.0)
   next:
     specifier: 14.0.4
     version: 14.0.4(react-dom@18.2.0)(react@18.2.0)
@@ -40,6 +43,9 @@ devDependencies:
   autoprefixer:
     specifier: ^10.0.1
     version: 10.4.16(postcss@8.4.33)
+  dotenv:
+    specifier: ^16.3.1
+    version: 16.3.1
   eslint:
     specifier: ^8
     version: 8.56.0
@@ -507,6 +513,11 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /@planetscale/database@1.13.0:
+    resolution: {integrity: sha512-sb9tUoF+Po55o+3PRHZVeH8XzUIABKBKcnq6oBUa+p/2uau/E2EXhnUPXmkC/x7oB6ILBqmqTL6dPP5Dn6d6iA==}
+    engines: {node: '>=16'}
+    dev: false
 
   /@rushstack/eslint-patch@1.6.1:
     resolution: {integrity: sha512-UY+FGM/2jjMkzQLn8pxcHGMaVLh9aEitG3zY2CiY7XHdLiz3bZOwa6oDxNqEMv7zZkV+cj5DOdz0cQ1BP5Hjgw==}
@@ -1089,6 +1100,11 @@ packages:
       esutils: 2.0.3
     dev: true
 
+  /dotenv@16.3.1:
+    resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
+    engines: {node: '>=12'}
+    dev: true
+
   /dreamopt@0.8.0:
     resolution: {integrity: sha512-vyJTp8+mC+G+5dfgsY+r3ckxlz+QMX40VjPQsZc5gxVAxLmi64TBoVkP54A/pRAXMXsbu2GMMBrZPxNv23waMg==}
     engines: {node: '>=0.4.0'}
@@ -1116,7 +1132,7 @@ packages:
       - supports-color
     dev: false
 
-  /drizzle-orm@0.28.6:
+  /drizzle-orm@0.28.6(@planetscale/database@1.13.0):
     resolution: {integrity: sha512-yBe+F9htrlYER7uXgDJUQsTHFoIrI5yMm5A0bg0GiZ/kY5jNXTWoEy4KQtg35cE27sw1VbgzoMWHAgCckUUUww==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
@@ -1177,6 +1193,8 @@ packages:
         optional: true
       sqlite3:
         optional: true
+    dependencies:
+      '@planetscale/database': 1.13.0
     dev: false
 
   /eastasianwidth@0.2.0:

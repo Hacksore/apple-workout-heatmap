@@ -1,3 +1,5 @@
+import { db } from "@/lib/db";
+import { metrics } from "@/lib/db/schema";
 import { NextResponse } from "next/server";
 
 interface Metric {
@@ -30,12 +32,11 @@ export async function POST(req: Request) {
   // TODO: insert data into db
 
   const healthPayload: HealthDataResponse = await req.json();
-  const metrics = healthPayload.data.metrics;
+  const healthMetrics = healthPayload.data.metrics;
 
-  const firstMetric = metrics[0];
+  db.insert(metrics).values(healthMetrics);
 
   return NextResponse.json({
     status: "ok",
-    firstMetric,
   });
 }
