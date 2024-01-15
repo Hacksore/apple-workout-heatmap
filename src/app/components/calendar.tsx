@@ -14,6 +14,7 @@ export default function Calendar() {
       value={value}
       style={{
         color: "#fff",
+        // @ts-ignore
         "--rhm-rect": "#2d2d2d",
       }}
       weekLabels={["", "Mon", "", "Wed", "", "Fri", ""]}
