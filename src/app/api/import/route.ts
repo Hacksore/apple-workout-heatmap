@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   // TODO: insert data into db
 
   const data = await req.json();
-  console.log(data);
+  console.log(JSON.stringify(data));
 
   return NextResponse.json({
     status: "ok",
