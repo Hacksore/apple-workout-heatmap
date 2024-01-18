@@ -16,6 +16,14 @@ export default function Calendar({ data }: { data: any }) {
         width="800"
         startDate={new Date("2024/01/01")}
         endDate={new Date("2024/12/31")}
+        panelColors={{
+          [-1]: "red",
+          0: "#2D2D2D",
+          15: "#0e4429",
+          30: "#006d32",
+          45: "#26a641",
+          60: "#39d353",
+        }}
       />
       <pre>{JSON.stringify(data, null, 2)}</pre>
     </>
