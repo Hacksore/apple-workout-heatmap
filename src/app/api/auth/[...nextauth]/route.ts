@@ -1,4 +1,18 @@
 import NextAuth from "next-auth";
+import crypto from "crypto";
+
+// NOTE: prolly not needed
+const createSignature = (action: string) => {
+  const timestamp = Date.now();
+
+  const data = action + "," + process.env.WITHINGS_CLIENT_ID + "," + timestamp;
+  const signature = crypto
+    .createHmac("sha256", process.env.WITHINGS_CLIENT_SECRET!)
+    .update(data)
+    .digest("hex");
+
+  return signature;
+};
 
 const handler = NextAuth({
   providers: [
@@ -8,15 +22,14 @@ const handler = NextAuth({
       type: "oauth",
       userinfo: {
         url: "https://wbsapi.withings.net/v2/user",
-        // NOTE: THESE MOTHER FUCKERS ARE NOT SPEC COMPLIANT
-        // DOCS: https://next-auth.js.org/configuration/providers/oauth#token-option
+        // TODO: we need to do a custom lookup
         async request(context) {
-          // console.log("userinfo:", { context });
-          // context contains useful properties to help you make the request.
+          const token: any = context.tokens['0'];
+          console.log("userinfo:", token);
           return {
-            id: "123",
-            name: "John Doe",
-            email: "test@test.com",
+            id: token.userId,
+            name: "nothing",
+            email: "ayo"
           };
         },
       },
@@ -26,7 +39,6 @@ const handler = NextAuth({
           response_type: "code",
           scope: "user.activity,user.metrics,user.info",
           redirect_uri: "http://localhost:3000/api/auth/callback/Withings",
-          // mode: "demo",
         },
       },
       token: {
@@ -59,9 +71,19 @@ const handler = NextAuth({
               console.error({ err });
             });
 
-          console.log({ response });
+          // console.log({ response });
 
-          return {};
+          return {
+            tokens: [
+              {
+                userId: response.body.userid,
+                accessToken: response.body.access_token,
+                accessTokenExpires: response.body.expires_in,
+                refreshToken: response.body.refresh_token,
+                refreshTokenExpires: response.body.expires_in,
+              },
+            ],
+          };
         },
       },
       clientId: process.env.WITHINGS_CLIENT_ID,
