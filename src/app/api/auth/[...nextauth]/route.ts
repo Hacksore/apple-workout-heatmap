@@ -24,12 +24,10 @@ const handler = NextAuth({
         url: "https://wbsapi.withings.net/v2/user",
         // TODO: we need to do a custom lookup
         async request(context) {
-          const token: any = context.tokens['0'];
+          const token: any = context.tokens["0"];
           console.log("userinfo:", token);
           return {
             id: token.userId,
-            name: "nothing",
-            email: "ayo"
           };
         },
       },
@@ -71,8 +69,6 @@ const handler = NextAuth({
               console.error({ err });
             });
 
-          // console.log({ response });
-
           return {
             tokens: [
               {
@@ -89,17 +85,12 @@ const handler = NextAuth({
       clientId: process.env.WITHINGS_CLIENT_ID,
       clientSecret: process.env.WITHINGS_CLIENT_SECRET,
       profile(profile) {
-        console.log("profile ", profile);
-        return {
-          id: profile.id,
-          name: profile?.name,
-        };
+        return profile;
       },
     },
   ],
   secret: process.env.NEXTAUTH_SECRET,
-  debug: true,
-
+  debug: false,
   session: {
     maxAge: 30 * 24 * 60 * 60, // 30 days
     updateAge: 24 * 60 * 60, // 24 hours
@@ -108,20 +99,23 @@ const handler = NextAuth({
     maxAge: 60 * 60 * 24 * 30,
   },
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
-      return true;
-    },
-    async redirect({ url, baseUrl }) {
-      return baseUrl;
-    },
-    async session({ session, token, user }) {
-      return session;
-    },
-    async jwt({ token, user, account, profile, isNewUser }) {
+    async jwt({ token, account, user }) {
       if (account?.accessToken) {
         token.accessToken = account.accessToken;
       }
+      
+      if (account) {
+        token.id = user.id;
+      }
+
       return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id;
+      }
+
+      return session;
     },
   },
 });

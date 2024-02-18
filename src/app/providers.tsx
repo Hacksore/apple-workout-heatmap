@@ -9,7 +9,7 @@ export const Providers = () => {
       Test sign in
       <button
         onClick={async () => {
-          await signIn();
+          await signIn("Withings");
         }}
       >
         Sign in
