@@ -1,10 +1,7 @@
 import { NextAuthOptions } from "next-auth";
 
-const {
-  WITHINGS_CLIENT_ID,
-  WITHINGS_CLIENT_SECRET,
-  NEXTAUTH_SECRET,
-} = process.env;
+const { WITHINGS_CLIENT_ID, WITHINGS_CLIENT_SECRET, NEXTAUTH_SECRET } =
+  process.env;
 
 // TODO: move this to next-auth as a provider
 export const authOptions: NextAuthOptions = {
@@ -34,14 +31,6 @@ export const authOptions: NextAuthOptions = {
         url: "https://wbsapi.withings.net/v2/oauth2",
         // @ts-ignore
         async request(context) {
-          const formdata = new URLSearchParams();
-          formdata.append("action", "requesttoken");
-          formdata.append("grant_type", "authorization_code");
-          formdata.append("client_id", WITHINGS_CLIENT_ID!);
-          formdata.append("client_secret", WITHINGS_CLIENT_SECRET!);
-          formdata.append("code", context.params.code!);
-          formdata.append("redirect_uri", context.provider.callbackUrl);
-
           // get a token with custom logic
           const response = await fetch(
             "https://wbsapi.withings.net/v2/oauth2",
@@ -50,13 +39,17 @@ export const authOptions: NextAuthOptions = {
               headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
               },
-              body: formdata,
+              body: new URLSearchParams({
+                action: "requesttoken",
+                grant_type: "authorization_code",
+                client_id: context.provider.clientId!,
+                client_secret: context.provider.clientSecret!,
+                code: context.params.code!,
+                redirect_uri: context.provider.callbackUrl,
+              }),
             },
           )
             .then((res) => res.json())
-            .catch((err) => {
-              console.error({ err });
-            });
 
           return {
             tokens: [
@@ -109,4 +102,3 @@ export const authOptions: NextAuthOptions = {
     },
   },
 };
-
