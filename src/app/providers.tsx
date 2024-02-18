@@ -1,5 +1,6 @@
 "use client";
-import { SessionProvider, signIn } from "next-auth/react";
+import { SessionProvider, signIn, useSession } from "next-auth/react";
+import { CalendarView } from "./calendar";
 
 // create session provider
 export const Providers = () => {
@@ -13,6 +14,8 @@ export const Providers = () => {
       >
         Sign in
       </button>
+
+      <CalendarView />
     </SessionProvider>
   );
 };
