@@ -1,18 +1,6 @@
 import NextAuth from "next-auth";
-import crypto from "crypto";
 
-// NOTE: prolly not needed
-const createSignature = (action: string) => {
-  const timestamp = Date.now();
-
-  const data = action + "," + process.env.WITHINGS_CLIENT_ID + "," + timestamp;
-  const signature = crypto
-    .createHmac("sha256", process.env.WITHINGS_CLIENT_SECRET!)
-    .update(data)
-    .digest("hex");
-
-  return signature;
-};
+const { WITHINGS_CALLBACK_URL, WITHINGS_CLIENT_ID, WITHINGS_CLIENT_SECRET, NEXTAUTH_SECRET } = process.env;
 
 const handler = NextAuth({
   providers: [
@@ -36,7 +24,7 @@ const handler = NextAuth({
         params: {
           response_type: "code",
           scope: "user.activity,user.metrics,user.info",
-          redirect_uri: "http://localhost:3000/api/auth/callback/Withings",
+          redirect_uri: WITHINGS_CALLBACK_URL,
         },
       },
       token: {
@@ -46,13 +34,10 @@ const handler = NextAuth({
           const formdata = new URLSearchParams();
           formdata.append("action", "requesttoken");
           formdata.append("grant_type", "authorization_code");
-          formdata.append("client_id", process.env.WITHINGS_CLIENT_ID!);
-          formdata.append("client_secret", process.env.WITHINGS_CLIENT_SECRET!);
+          formdata.append("client_id", WITHINGS_CLIENT_ID!);
+          formdata.append("client_secret", WITHINGS_CLIENT_SECRET!);
           formdata.append("code", context.params.code!);
-          formdata.append(
-            "redirect_uri",
-            "http://localhost:3000/api/auth/callback/Withings",
-          );
+          formdata.append("redirect_uri", WITHINGS_CALLBACK_URL!);
 
           // get a token with custom logic
           const response = await fetch(
@@ -83,14 +68,15 @@ const handler = NextAuth({
           };
         },
       },
-      clientId: process.env.WITHINGS_CLIENT_ID,
-      clientSecret: process.env.WITHINGS_CLIENT_SECRET,
+      clientId: WITHINGS_CLIENT_ID,
+      clientSecret: WITHINGS_CLIENT_SECRET,
+      debug: true,
       profile(profile) {
         return profile;
       },
     },
   ],
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: NEXTAUTH_SECRET,
   debug: false,
   session: {
     maxAge: 30 * 24 * 60 * 60, // 30 days
@@ -104,7 +90,7 @@ const handler = NextAuth({
       if (account?.accessToken) {
         token.accessToken = account.accessToken;
       }
-      
+
       if (account) {
         token.id = user.id;
       }
