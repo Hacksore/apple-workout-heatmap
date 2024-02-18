@@ -3,6 +3,19 @@ import { NextAuthOptions } from "next-auth";
 const { WITHINGS_CLIENT_ID, WITHINGS_CLIENT_SECRET, NEXTAUTH_SECRET } =
   process.env;
 
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      // TODO: add custom here
+    } & User
+  }
+
+  interface User {
+    // TODO: add custom here
+  }
+}
+
 // TODO: move this to next-auth as a provider
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -88,7 +101,6 @@ export const authOptions: NextAuthOptions = {
         token.accessToken = account["0"].accessToken;
       }
 
-      console.log("jwt", { token, account, user });
       return token;
     },
     async session({ session, token }) {
