@@ -1,10 +1,15 @@
+import { getServerSession } from "next-auth";
 import { Providers } from "./providers";
+import { authOptions } from "./api/auth/[...nextauth]/route";
 export default async function Home() {
+  const session = await getServerSession(authOptions)
 
   return (
     <main className="flex flex-col w-full">
-      This is a oauth demo flow
-
+      Server session:
+      <pre>{JSON.stringify(session)}</pre>
+      <hr />
+      Client session:
       <Providers/>
     </main>
   );

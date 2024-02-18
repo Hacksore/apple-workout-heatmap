@@ -1,8 +1,13 @@
 "use client";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 // create session provider
 export const CalendarView = () => {
   const session = useSession();
-  return <pre>{JSON.stringify(session, null, 2)}</pre>;
+
+  return session.data ? (
+    <pre>{JSON.stringify(session, null, 2)}</pre>
+  ) : (
+    <button className="bg-blue-600 w-80 p-2" onClick={() => signIn("withings")}>Sign in with Withings.com</button>
+  );
 };

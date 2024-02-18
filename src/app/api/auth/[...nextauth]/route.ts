@@ -1,21 +1,27 @@
-import NextAuth from "next-auth";
+import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from "next";
+import NextAuth, { NextAuthOptions, getServerSession } from "next-auth";
+import { config } from "process";
 
-const { WITHINGS_CALLBACK_URL, WITHINGS_CLIENT_ID, WITHINGS_CLIENT_SECRET, NEXTAUTH_SECRET } = process.env;
+const {
+  WITHINGS_CLIENT_ID,
+  WITHINGS_CLIENT_SECRET,
+  NEXTAUTH_SECRET,
+} = process.env;
 
-const handler = NextAuth({
+// TODO: move this to next-auth as a provider
+export const authOptions: NextAuthOptions = {
   providers: [
     {
-      id: "Withings",
+      id: "withings",
       name: "Withings",
       type: "oauth",
       userinfo: {
         url: "https://wbsapi.withings.net/v2/user",
-        // @ts-ignore
         async request(context) {
           const token: any = context.tokens["0"];
-          console.log("userinfo:", token);
           return {
             id: token.userId,
+            name: token.userid,
           };
         },
       },
@@ -24,7 +30,6 @@ const handler = NextAuth({
         params: {
           response_type: "code",
           scope: "user.activity,user.metrics,user.info",
-          redirect_uri: WITHINGS_CALLBACK_URL,
         },
       },
       token: {
@@ -37,7 +42,7 @@ const handler = NextAuth({
           formdata.append("client_id", WITHINGS_CLIENT_ID!);
           formdata.append("client_secret", WITHINGS_CLIENT_SECRET!);
           formdata.append("code", context.params.code!);
-          formdata.append("redirect_uri", WITHINGS_CALLBACK_URL!);
+          formdata.append("redirect_uri", context.provider.callbackUrl);
 
           // get a token with custom logic
           const response = await fetch(
@@ -87,12 +92,9 @@ const handler = NextAuth({
   },
   callbacks: {
     async jwt({ token, account, user }) {
-      if (account?.accessToken) {
-        token.accessToken = account.accessToken;
-      }
-
       if (account) {
         token.id = user.id;
+        token.accessToken = account.access_token;
       }
 
       return token;
@@ -101,11 +103,20 @@ const handler = NextAuth({
       if (token && session.user) {
         // @ts-ignore
         session.user.id = token.id;
+        // @ts-ignore
+        session.user.accessToken = token.accessToken;
       }
 
       return session;
     },
   },
-});
+};
 
+// Use it in server contexts
+export function auth(...args: [GetServerSidePropsContext["req"], GetServerSidePropsContext["res"]] | [NextApiRequest, NextApiResponse] | []) {
+  // @ts-ignore
+  return getServerSession(...args, config)
+}
+
+const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
