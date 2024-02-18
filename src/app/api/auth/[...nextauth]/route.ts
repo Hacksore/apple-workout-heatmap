@@ -22,7 +22,7 @@ const handler = NextAuth({
       type: "oauth",
       userinfo: {
         url: "https://wbsapi.withings.net/v2/user",
-        // TODO: we need to do a custom lookup
+        // @ts-ignore
         async request(context) {
           const token: any = context.tokens["0"];
           console.log("userinfo:", token);
@@ -41,6 +41,7 @@ const handler = NextAuth({
       },
       token: {
         url: "https://wbsapi.withings.net/v2/oauth2",
+        // @ts-ignore
         async request(context) {
           const formdata = new URLSearchParams();
           formdata.append("action", "requesttoken");
@@ -111,7 +112,8 @@ const handler = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      if (token) {
+      if (token && session.user) {
+        // @ts-ignore
         session.user.id = token.id;
       }
 
