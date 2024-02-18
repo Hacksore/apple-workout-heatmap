@@ -48,8 +48,7 @@ export const authOptions: NextAuthOptions = {
                 redirect_uri: context.provider.callbackUrl,
               }),
             },
-          )
-            .then((res) => res.json())
+          ).then((res) => res.json());
 
           return {
             tokens: [
@@ -85,9 +84,11 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, account, user }) {
       if (account) {
         token.id = user.id;
-        token.accessToken = account.access_token;
+        // @ts-ignore
+        token.accessToken = account["0"].accessToken;
       }
 
+      console.log("jwt", { token, account, user });
       return token;
     },
     async session({ session, token }) {
