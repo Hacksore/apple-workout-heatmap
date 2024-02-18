@@ -7,7 +7,7 @@ const { WITHINGS_CLIENT_ID, WITHINGS_CLIENT_SECRET, NEXTAUTH_SECRET } =
 declare module "next-auth" {
   interface Session {
     user: {
-      // TODO: add custom here
+      accessToken: string
     } & User
   }
 
