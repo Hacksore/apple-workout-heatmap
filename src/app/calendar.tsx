@@ -7,7 +7,6 @@ export const CalendarView = () => {
 
   return session.data ? (
     <>
-    <pre>{JSON.stringify(session, null, 2)}</pre>
     <button className="bg-red-600 w-80 p-2" onClick={() => signOut()}>Sign Out</button>
     </>
   ) : (
